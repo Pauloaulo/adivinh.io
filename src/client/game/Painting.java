@@ -50,8 +50,8 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
         int x = e.getX();
         int y = e.getY();
         
-        // Me sentindo orgulhoso!
-        // funcao que criei (cirilo) para remover pontos soltos ao desenhar rápido
+        // Funcao que criei (cirilo) para reduzir pontos soltos ao desenhar
+        // rápido
         //
         // -> o campo desta classe chamado "previous" (P) 
         //    armazena a coordenada do ultimo ponto (x,y) do rabisco
@@ -70,7 +70,7 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
         // -> ao soltar o mouse, Q receberá coordenadas invalidas
         //    no metodo "mouseRelased()"
 
-        if (previous.x != -1 && previous.y != -1)
+        if (previous.x != -1 && previous.y != -1 && (-1 < x && x < PAINTING_WIDTH && -1 < y && y < PAINTING_HEIGHT))
         {
             double vx = x - previous.x;
             double vy = y - previous.y;
@@ -84,9 +84,9 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
 
             while (Math.floor(x-i) != 0 && Math.floor(y-j) != 0)
             {
+                sketch[Math.round(i)][Math.round(j)] = true;
                 i += vx;
                 j += vy;
-                sketch[Math.round(i)][Math.round(j)] = true;
             }
             
             System.out.println("("+vx+","+vy+")");
