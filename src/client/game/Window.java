@@ -7,12 +7,12 @@ public class Window extends JFrame {
     public static final int SCREEN_WIDTH = 360;
     public static final int SCREEN_HEIGHT = 280;
 
-    public Window ()
-    {
+    public Window() {
         setAlwaysOnTop(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("ARTE DO VICTINHO SINISTRÃO");
-        add(new Painting(Painting.PAINTING_WIDTH, Painting.PAINTING_HEIGHT));
+        Painting painting = new Painting(SCREEN_WIDTH, SCREEN_HEIGHT);
+        add(painting);
         pack();
         setResizable(false);
         setVisible(true);
