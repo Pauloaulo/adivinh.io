@@ -2,6 +2,8 @@ package server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -18,6 +20,7 @@ public class Server extends Thread
     
     private Hashtable<Integer, Room> roomMap;
     private Hashtable<String, Player> playersMap;
+    private DataBase data;
     private Executor roomPool;
     private Executor clientPool;
     private String roomList;
@@ -32,6 +35,7 @@ public class Server extends Thread
         roomList = new String();
         roomMap = new Hashtable<Integer, Room>();
         playersMap = new Hashtable<String, Player>();
+        data = new DataBase();
         roomPool = Executors.newCachedThreadPool();
         clientPool = Executors.newCachedThreadPool();
     }
