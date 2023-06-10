@@ -2,6 +2,8 @@ package server.room;
 
 import java.util.LinkedList;
 import server.Server;
+import server.room.chat.Chat;
+import server.room.screen.Screen;
 
 public class Room implements Runnable
 {
@@ -22,7 +24,7 @@ public class Room implements Runnable
         this.players = new LinkedList<Player>();
         this.chatPort = 5000 + id;
         this.drawnerPort = 1024 + id;
-        this.chat = new Chat(players, chatPort);
+        this.chat = new Chat(chatPort, capacity);
         this.drawner = new Screen(players, drawnerPort);
     }
 
@@ -39,13 +41,13 @@ public class Room implements Runnable
     public synchronized void recivePlayer (Player p)
     {
         players.add(p);
-        System.out.println(String.format("%s: %s entrou!",name,p.getName()));
+        System.out.println(String.format("%s: %s entrou!",name,p.getNickname()));
     }
 
     public synchronized void quitPlayer (Player p)
     {
         players.remove(p);
-        System.out.println(String.format("%s: %s saiu T-T", name, p.getName()));
+        System.out.println(String.format("%s: %s saiu T-T", name, p.getNickname()));
     }
 
     @Override
