@@ -34,10 +34,6 @@ public class Server extends Thread
         playersMap = new Hashtable<String, Player>();
         roomPool = Executors.newCachedThreadPool();
         clientPool = Executors.newCachedThreadPool();
-        roomMap.put(++amountOfCreatedRooms, new Room(null, amountOfCreatedRooms, "sala 1", 1));
-        roomMap.put(++amountOfCreatedRooms, new Room(null, amountOfCreatedRooms, "sala 2", 1));
-        roomMap.put(++amountOfCreatedRooms, new Room(null, amountOfCreatedRooms, "sala 3", 1));
-        roomMap.put(++amountOfCreatedRooms, new Room(null, amountOfCreatedRooms, "sala 4", 1));
     }
 
     @Override
