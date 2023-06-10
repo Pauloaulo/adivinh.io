@@ -1,16 +1,25 @@
-package GUI;
+package GUI.room;
+
+import GUI.Control;
+import GUI.main.GameFrame;
+import GUI.login.LoginFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 public class NewRoomFrame extends LoginFrame {
+    private JMenuBar menuBar;
     private JTextField roomName;
     private JTextField roomTheme;
 
+    public NewRoomFrame(String nickname, Control control) {
+        super(nickname,control);
 
-    public NewRoomFrame(Control control) {
-        super(control);
+        menuBar = new JMenuBar();
+        menuBar.add(setMenu());
+        setJMenuBar(menuBar);
     }
 
     @Override
@@ -53,16 +62,46 @@ public class NewRoomFrame extends LoginFrame {
         return panel;
     }
 
+    @Override
+    protected JMenu setMenu() {
+        JMenu menu = new JMenu("options");
+
+        JMenuItem item1 = new JMenuItem("sair");
+        item1.setActionCommand(LOGOUT_STRING);
+        item1.addActionListener(this);
+
+        JMenuItem item2 = new JMenuItem("voltar");
+        item2.setActionCommand("go_back");
+        item2.addActionListener(this);
+
+        menu.add(item2);
+        menu.add(item1);
+        return menu;
+    }
+
+    @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == 10) {
             String name = roomName.getText();
             String theme = roomTheme.getText();
             if (!name.equals("") && !theme.equals("")) {
                 control.setRequest(CREATE_ROOM_STRING+","+name);
-                String response = control.getResponse();
 
-                System.out.println(response);
+                this.dispose();
+                new GameFrame(nickname,control);
             }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals(LOGOUT_STRING)) {
+            control.setRequest(LOGOUT_STRING);
+            dispose();
+        }
+        if (e.getActionCommand().equals("go_back")) {
+            new RoomFrame(nickname, control);
+            dispose();
         }
     }
 }

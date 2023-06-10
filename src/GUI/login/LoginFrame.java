@@ -1,5 +1,7 @@
-package GUI;
+package GUI.login;
 
+import GUI.Control;
+import GUI.room.RoomFrame;
 import server.protocol.Protocol;
 
 import javax.swing.*;
@@ -9,14 +11,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class LoginFrame extends JFrame implements KeyListener, Protocol {
+public class LoginFrame extends JFrame implements KeyListener, ActionListener, Protocol {
     protected Control control;
+    protected String nickname;
 
     private JTextField login;
 
-    public LoginFrame(Control control) {
+    public LoginFrame(String nickname, Control control) {
         super("Program");
 
+        this.nickname = nickname;
         this.control = control;
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -40,6 +44,21 @@ public class LoginFrame extends JFrame implements KeyListener, Protocol {
         panel.setLayout(null);
         panel.add(login);
         return panel;
+    }
+
+    protected JMenu setMenu() {
+        JMenu menu = new JMenu("options");
+        JMenuItem item = new JMenuItem("sair");
+        item.setActionCommand(LOGOUT_STRING);
+        item.addActionListener(this);
+
+        menu.add(item);
+        return menu;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //usused
     }
 
     @Override
@@ -70,5 +89,7 @@ public class LoginFrame extends JFrame implements KeyListener, Protocol {
             }
         }
     }
+
+    public String getNickname() { return nickname; }
 
 }

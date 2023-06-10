@@ -1,22 +1,29 @@
-package GUI;
+package GUI.room;
+
+import GUI.Control;
+import GUI.login.LoginFrame;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class RoomFrame extends LoginFrame implements ActionListener {
+public class RoomFrame extends LoginFrame {
+    private JMenuBar menuBar;
     private JButton newRoom;
     private JLabel profile;
-
     private JPanel lower;
 
     private RoomsRefresher scheduler;
 
     public RoomFrame(String nickname, Control control) {
-        super(control);
+        super(nickname,control);
+
         profile.setText(nickname);
         profile.setIcon(new ImageIcon("src/GUI/images/java.png"));
+
+        menuBar = new JMenuBar();
+        menuBar.add(setMenu());
+        setJMenuBar(menuBar);
 
         scheduler = new RoomsRefresher(this);
         (new Thread(scheduler)).start();
@@ -67,7 +74,7 @@ public class RoomFrame extends LoginFrame implements ActionListener {
             String r[] = room.split(",");
 
             if (r.length == 3) {
-                JLabel label = new RoomLabel(r[0],r[1],control,scheduler,this);
+                JLabel label = new RoomLabel(r, control,scheduler,this);
                 lower.add(label);
             }
 
@@ -81,8 +88,13 @@ public class RoomFrame extends LoginFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == newRoom) {
-            NewRoomFrame frame = new NewRoomFrame(control);
+            new NewRoomFrame(nickname,control);
             scheduler.shutdown();
+            dispose();
+        }
+        if (e.getActionCommand().equals(LOGOUT_STRING)) {
+            scheduler.shutdown();
+            control.setRequest(LOGOUT_STRING);
             dispose();
         }
     }

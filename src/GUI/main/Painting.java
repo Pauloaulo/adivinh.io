@@ -1,4 +1,4 @@
-package client.game;
+package GUI.main;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,13 +17,16 @@ import javax.swing.JPanel;
 public class Painting extends JPanel implements MouseMotionListener, MouseListener, KeyListener {
     private Color[][] sketch;
     private static final int BRUSH_SIZE = 10;
-    private static final int PAINTING_WIDTH = 360;
-    private static final int PAINTING_HEIGHT = 240;
+    private final int PAINTING_WIDTH;
+    private final int PAINTING_HEIGHT;
     private Coord2D previous;
 
     private boolean eraseMode;
 
     public Painting(int w, int h) {
+        PAINTING_WIDTH = w;
+        PAINTING_HEIGHT = h;
+
         previous = new Coord2D(-1, -1);
         sketch = new Color[PAINTING_WIDTH][PAINTING_HEIGHT];
         addMouseListener(this);
@@ -42,7 +45,7 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
     private void clearSketch() {
         for (int x = 0; x < PAINTING_WIDTH; x++) {
             for (int y = 0; y < PAINTING_HEIGHT; y++) {
-                sketch[x][y] = new Color(0, 0, 0, 0); // Transparente
+                sketch[x][y] = Color.WHITE;
             }
         }
     }
@@ -66,8 +69,8 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
         }
     }
 
-      @Override
-public void mouseDragged(MouseEvent e) {
+    @Override
+    public void mouseDragged(MouseEvent e) {
     int x = e.getX();
     int y = e.getY();
 
@@ -124,6 +127,11 @@ public void mouseDragged(MouseEvent e) {
             setEraseMode(true);
         }
      }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 
 

@@ -1,5 +1,7 @@
-package GUI;
+package GUI.room;
 
+import GUI.Control;
+import GUI.main.GameFrame;
 import server.protocol.Protocol;
 
 import javax.swing.*;
@@ -14,10 +16,11 @@ public class RoomLabel extends JLabel implements MouseListener, Protocol {
     private RoomFrame frame;
     private RoomsRefresher scheduler;
 
-    public RoomLabel(String id, String title, Control control, RoomsRefresher scheduler, RoomFrame frame) {
-        super(" " + title);
+    //args0 id, args1 title
+    public RoomLabel(String[] args, Control control, RoomsRefresher scheduler, RoomFrame frame) {
+        super(" " + args[1]);
 
-        this.id = id;
+        this.id = args[0];
         this.frame = frame;
         this.control = control;
         this.scheduler = scheduler;
@@ -39,8 +42,9 @@ public class RoomLabel extends JLabel implements MouseListener, Protocol {
 
            if (response.contains(SUCESSFULL_STRING)) {
                scheduler.shutdown();
+               frame.dispose();
+               new GameFrame(frame.getNickname(),control);
            }
-            System.out.println(response);
         }
     }
 
@@ -59,7 +63,6 @@ public class RoomLabel extends JLabel implements MouseListener, Protocol {
         if (e.getSource() == this) {
             this.setBackground(new Color(0x500A80));
             frame.repaint();
-            frame.setVisible(true);
 
             scheduler.shutdown();
         }
@@ -70,7 +73,6 @@ public class RoomLabel extends JLabel implements MouseListener, Protocol {
         if (e.getSource() == this) {
             this.setBackground(new Color(0x601A80));
             frame.repaint();
-            frame.setVisible(true);
 
             scheduler.restart();
         }

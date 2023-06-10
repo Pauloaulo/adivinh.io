@@ -1,5 +1,6 @@
 package GUI;
 
+import GUI.login.LoginFrame;
 import server.protocol.Protocol;
 
 import java.io.DataInputStream;
@@ -34,7 +35,8 @@ public class Control {
         } catch (Exception ignored)  { System.out.println("request_erro"); }
     }
 
-    //Talvez gere DeadLock
+    /* Metodo esta gerando DeadLock,
+    * não pode ser chamado antes de setRequest*/
     public String getResponse() {
         try {
             synchronized (lock2) { lock2.wait(); }
@@ -107,7 +109,7 @@ public class Control {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             control = new Control(in, out);
-            new LoginFrame(control);
+            new LoginFrame(null,control);
         } catch (Exception e) { /*connection erro frame*/ }
     }
 
