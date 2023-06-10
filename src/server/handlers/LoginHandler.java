@@ -41,7 +41,7 @@ public class LoginHandler implements Runnable, Protocol {
                     server.addPlayer(p);
                     out.writeUTF(SUCESSFULL_STRING);
 
-                    new ComunicateHandler(server, p);
+                    new ComunicationHandler(server, p);
                     
                     if (p != null) p.getSocket().close();
                     p = null;

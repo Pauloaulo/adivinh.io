@@ -9,10 +9,10 @@ public class Player
     private Socket socket;
     private Room room;
     
-    public Player (String name, Socket socket)
+    public Player (String nickname, Socket socket)
     {
         this.room = null;
-        this.name = name;
+        this.name = nickname;
         this.points = 0;
         this.socket = socket;
     }
@@ -56,7 +56,7 @@ public class Player
         return points;
     }
 
-    public String getName() 
+    public String getNickname() 
     {
         return name;
     }

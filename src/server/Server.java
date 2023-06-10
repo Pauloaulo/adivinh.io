@@ -56,8 +56,7 @@ public class Server extends Thread
 
     }
     
-    public int getAmountOfConnectedPlayers()
-    {
+    public int getAmountOfConnectedPlayers() {
         return amountOfConnectedPlayers;
     }
 
@@ -93,7 +92,7 @@ public class Server extends Thread
 
     public synchronized void addPlayer(Player player)
     {
-        playersMap.put(player.getName(), player);
+        playersMap.put(player.getNickname(), player);
         amountOfConnectedPlayers++;
     }
 
@@ -109,7 +108,7 @@ public class Server extends Thread
     {
         try {
             player.getSocket().close();
-            playersMap.remove(player.getName());
+            playersMap.remove(player.getNickname());
             amountOfConnectedPlayers--;
         } catch (IOException e) { return false; }
 
