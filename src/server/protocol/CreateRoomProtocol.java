@@ -14,7 +14,7 @@ public class CreateRoomProtocol implements Protocol {
         String roomName = request[1];
         String roomCategory = request[2];
         Server.addRoom(roomName, p, roomCategory);
-        String response = String.format("%s,%s", SUCESSFULL_STRING, p.getRoom().getInfo());
+        String response = String.format("%s,%s", JOINED_IN_A_ROOM_STRING, p.getRoom().getInfo());
         return response;
     }
 }

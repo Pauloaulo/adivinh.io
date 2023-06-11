@@ -1,14 +1,12 @@
 package server.room;
-
-import server.room.Room;
-
 import java.net.Socket;
-
 public class Player
 {
-    private String name;
     private int points;
-    private Socket socket;
+    private String name;
+    private Socket serverSocket;
+    private Socket chatSocket;
+    private Socket paintingSocket;
     private Room room;
     
     public Player (String nickname, Socket socket)
@@ -16,12 +14,32 @@ public class Player
         this.room = null;
         this.name = nickname;
         this.points = 0;
-        this.socket = socket;
+        this.serverSocket = socket;
     }
 
-    public Socket getSocket ()
+    public void setChatSocket (Socket s)
     {
-        return socket;
+        this.chatSocket = s;
+    }
+    
+    public void setPaintingSocket (Socket s)
+    {
+        this.paintingSocket = s;
+    }
+    
+    public Socket getChatSocket ()
+    {
+        return chatSocket;
+    }
+
+    public Socket getPaintingSocket ()
+    {
+        return paintingSocket;
+    }
+
+    public Socket getServerSocket ()
+    {
+        return serverSocket;
     }
 
     public Room getRoom ()
@@ -29,12 +47,12 @@ public class Player
         return room;
     }
 
-    public void enterRoom (Room r)
-    {
-        if (this.room == null) {
-            r.recivePlayer(this);
+    public boolean setRoom (Room r) {
+        if (r != null)
+        {
             this.room = r;
         }
+        return room != null;
     }
     
     public boolean quitRoom ()

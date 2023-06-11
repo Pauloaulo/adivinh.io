@@ -28,7 +28,7 @@ public class Room implements Runnable
     public String getName () { return name; }
     public String getInfo()
     {
-        String data = String.format("size %d,chat %s:%d,painting %s:%d", players.size(), "localhost", 0, "localhost", 0);
+        String data = String.format("%d,%d,%s:%d,%s:%d", id, players.size(), "localhost", 0, "localhost", 0);
         return data;
     }
     public String getCategory() {
@@ -58,8 +58,8 @@ public class Room implements Runnable
     public void run()
     {
         while (players.size() > 0) {
-            System.out.println(String.format("sala %s está rodando!\njogadores %d", name, players.size()));
-            try { Thread.sleep(2000); } catch (Exception e) {}
+            // System.out.println(String.format("sala %s está rodando!\njogadores %d", name, players.size()));
+            try { Thread.sleep(5000); } catch (Exception e) {}
         }
 
         System.out.println("sala " + name + " encerrada");

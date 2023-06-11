@@ -116,6 +116,7 @@ class ResponseHandlerChat extends Thread {
             out.writeUTF(String.format("%s,%d,%s", Protocol.JOIN_CHAT_STRING, id, RequestHandlerChat.nick));
             System.out.println(in.readUTF());
 
+            System.out.println("CHAT DA SALA: ");
             // Thread q ficara printando as mensagens recebidas
             new MSGPrinter(s).start();
 
