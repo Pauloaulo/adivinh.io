@@ -16,8 +16,8 @@ public class ChatClientTest {
             Socket socket = new Socket("localhost", 5000);
             Semaphore s1 = new Semaphore(0, true);
             Semaphore s2 = new Semaphore(1, true);
-            RequestHandler req = new RequestHandler(socket, s1, s2);
-            ResponseHandler res = new ResponseHandler(socket, s2, s1);
+            RequestHandlerChat req = new RequestHandlerChat(socket, s1, s2);
+            ResponseHandlerChat res = new ResponseHandlerChat(socket, s2, s1);
             
             req.start();
             res.start();
@@ -26,13 +26,13 @@ public class ChatClientTest {
     }
 }
 
-class RequestHandler extends Thread {
+class RequestHandlerChat extends Thread {
     public static String nick = new String();
     public Socket socket;
     public Semaphore a;
     public Semaphore b;
 
-    public RequestHandler (Socket socket, Semaphore a, Semaphore b)
+    public RequestHandlerChat(Socket socket, Semaphore a, Semaphore b)
     {
         this.socket = socket;
         this.a = a;
@@ -67,12 +67,12 @@ class RequestHandler extends Thread {
     }
 }
 
-class ResponseHandler extends Thread {
+class ResponseHandlerChat extends Thread {
     public Socket socket;
     public Semaphore a; 
     public Semaphore b;
     
-    public ResponseHandler (Socket socket, Semaphore a, Semaphore b)
+    public ResponseHandlerChat(Socket socket, Semaphore a, Semaphore b)
     {
         this.socket = socket;
         this.a = a;
@@ -113,7 +113,7 @@ class ResponseHandler extends Thread {
             String msg = new String();
 
             // logando no chat
-            out.writeUTF(String.format("%s,%d,%s", Protocol.JOIN_CHAT_STRING, id, RequestHandler.nick));
+            out.writeUTF(String.format("%s,%d,%s", Protocol.JOIN_CHAT_STRING, id, RequestHandlerChat.nick));
             System.out.println(in.readUTF());
 
             // Thread q ficara printando as mensagens recebidas

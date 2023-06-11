@@ -8,11 +8,12 @@ public class CreateRoomProtocol implements Protocol {
     {
         if (p.getRoom() != null)
             return ALREADY_IN_A_ROOM_STRING;
-        if (request.length != 2)
+        if (request.length != 3)
             return FORBBIDEN_REQUEST_STRING;
 
         String roomName = request[1];
-        server.addRoom(roomName, p);
+        String roomCategory = request[2];
+        server.addRoom(roomName, p, roomCategory);
         String response = String.format("%s,%s", SUCESSFULL_STRING, p.getRoom().getInfo());
         return response;
     }
