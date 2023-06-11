@@ -125,9 +125,10 @@ class ResponseHandlerChat extends Thread {
             {
                 msg = scan.nextLine();
                 out.writeUTF(msg);
+                if (msg.startsWith("/quit")) break;
             }
 
-            scan.close();
+            s.close();
         } catch (Exception e) { }
     }
 

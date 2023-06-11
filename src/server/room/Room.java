@@ -49,7 +49,7 @@ public class Room implements Runnable
     {
         synchronized (players) {
             players.remove(p);
-            System.out.println(String.format("%s: %s saiu T-T", name, p.getNickname()));
+            p.setChatSocket(null);
             players.notifyAll();
         }
     }

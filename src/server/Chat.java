@@ -59,6 +59,8 @@ public class Chat extends Thread
         ArrayList<ChatConnectionHandler> chatGroup = groups.get(roomId);
         synchronized (chatGroup) {
             if (chatGroup != null) {
+                for (ChatConnectionHandler hand : chatGroup)
+                    quit(roomId, hand);
                 groups.remove(roomId);
             }
         }
@@ -69,6 +71,9 @@ public class Chat extends Thread
         ArrayList<ChatConnectionHandler> chatGroup = groups.get(roomId);
         synchronized (chatGroup) {
             chatGroup.remove(hand);
+            broadcast(roomId, (hand.getBoundPlayer().getNickname() + " saiu"));
+            hand = null;
+            chatGroup.notifyAll();
         }
     }
 

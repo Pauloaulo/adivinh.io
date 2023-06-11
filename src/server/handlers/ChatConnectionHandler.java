@@ -1,6 +1,7 @@
 package server.handlers;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 import server.Chat;
@@ -39,12 +40,12 @@ public class ChatConnectionHandler implements Runnable
                 if (roomId != null ) {
 
                     boundPlayer = Server.getPlayer(nickname);
-                    System.out.println("bound player nick? " + boundPlayer.getNickname());
+                    // System.out.println("bound player nick? " + boundPlayer.getNickname());
                 
                     if (boundPlayer != null) {
                         boundPlayer.setChatSocket(socket);
 
-                        System.out.println("bound player socket exist? " + (boundPlayer.getChatSocket() != null));
+                        // System.out.println("bound player socket exist? " + (boundPlayer.getChatSocket() != null));
                         Chat.join(roomId, this);
                         startChating();
                     }
@@ -57,18 +58,36 @@ public class ChatConnectionHandler implements Runnable
 
     private void startChating ()
     {
-        if (boundPlayer != null) {
-            try {
-                String msg = new String();
-                DataInputStream in = new DataInputStream(boundPlayer.getChatSocket().getInputStream());
+        try {
+            String msg = new String();
+            DataInputStream in = new DataInputStream(boundPlayer.getChatSocket().getInputStream());
 
-                while (!boundPlayer.getChatSocket().isClosed()) {
-                    msg = in.readUTF();
+            while (boundPlayer.getChatSocket() != null && !boundPlayer.getChatSocket().isClosed()) {
+                msg = in.readUTF();
+                
+                if (msg.startsWith("/quit")) {
+                    shutdown();
+                    break;
+                } else {
                     msg = String.format("%s: %s", boundPlayer.getNickname(), msg);
                     Chat.broadcast(boundPlayer.getRoom().getId(), msg);
                 }
-                
-            } catch (Exception e ) {}
+            }
+
+            shutdown();
+
+        } catch (Exception e ) {
+            try {socket.close();} catch (Exception e2) { }
+        }
+    }
+
+    public void shutdown ()
+    {
+        if (boundPlayer != null) {
+            Chat.quit(boundPlayer.getRoom().getId(), this);
+            boundPlayer.setChatSocket(null);
+            boundPlayer.quitRoom();
+            try {socket.close();} catch (IOException e ) {}
         }
     }
 
