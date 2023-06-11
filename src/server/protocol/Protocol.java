@@ -16,4 +16,6 @@ public interface Protocol
     public final String EXIT_ROOM_STRING = "exit-room";
     public final String ROOM_NOT_EXISTS_STRING = "room-not-exist";
     public final String TEXT_MESSAGE_STRING = "text-message";
+    public final String JOIN_CHAT_STRING = "join-chat";
+    public final String CHAT_JOINED_SUCESSFULLY = "chat-joined-sucessfully";
 }

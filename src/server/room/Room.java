@@ -1,20 +1,16 @@
 package server.room;
 
 import java.util.LinkedList;
+
+import server.Chat;
 import server.Server;
-import server.room.chat.Chat;
-import server.room.screen.Screen;
 
 public class Room implements Runnable
 {
-    private int chatPort;
-    private int drawnerPort;
     private int id;
     private LinkedList<Player> players;
     private Server server;
     private String name;
-    protected Chat chat;
-    protected Screen drawner;
 
     public Room (Server server, int id, String name, int capacity)
     {
@@ -22,10 +18,7 @@ public class Room implements Runnable
         this.name = name;
         this.server = server;
         this.players = new LinkedList<Player>();
-        this.chatPort = 5000 + id;
-        this.drawnerPort = 1024 + id;
-        this.chat = new Chat(chatPort, capacity);
-        this.drawner = new Screen(players, drawnerPort);
+        Chat.newChat(id);
     }
 
     public int getId () { return id; }
@@ -34,20 +27,24 @@ public class Room implements Runnable
     
     public String getInfo()
     {
-        String data = String.format("%d,%s,%d,%s,%d", players.size(), "localhost", chatPort, "localhost", drawnerPort);
+        String data = String.format("size %d,chat %s:%d,painting %s:%d", players.size(), "localhost", 0, "localhost", 0);
         return data;
     }
 
-    public synchronized void recivePlayer (Player p)
+    public void recivePlayer (Player p)
     {
-        players.add(p);
-        System.out.println(String.format("%s: %s entrou!",name,p.getNickname()));
+        synchronized (players) {
+            players.add(p);
+            System.out.println(String.format("%s: %s entrou!",name,p.getNickname()));
+        }
     }
 
-    public synchronized void quitPlayer (Player p)
+    public void quitPlayer (Player p)
     {
-        players.remove(p);
-        System.out.println(String.format("%s: %s saiu T-T", name, p.getNickname()));
+        synchronized (players) {
+            players.remove(p);
+            System.out.println(String.format("%s: %s saiu T-T", name, p.getNickname()));
+        }
     }
 
     @Override
@@ -59,6 +56,7 @@ public class Room implements Runnable
         }
 
         System.out.println("sala " + name + " encerrada");
+        Chat.endChat(id);
         server.removeRoom(this.id);
     }
 }

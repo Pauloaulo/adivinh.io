@@ -39,6 +39,7 @@ public class Server extends Thread
         data = new DataBase();
         roomPool = Executors.newCachedThreadPool();
         clientPool = Executors.newCachedThreadPool();
+        new Chat().start();
     }
 
     @Override
