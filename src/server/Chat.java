@@ -20,7 +20,7 @@ public class Chat extends Thread
         try {
             Executor e = Executors.newCachedThreadPool();
             server = new ServerSocket(3000);
-
+            System.out.println("chat rodando! porta 3000");
             while (!server.isClosed())
                 e.execute(new ChatConnectionHandler(this, server.accept()));
         
@@ -29,37 +29,52 @@ public class Chat extends Thread
 
     public static void broadcast (int roomId, String msg)
     {
-        synchronized (chats.get(roomId)) {
-            for (ChatConnectionHandler cHandler : chats.get(roomId)) {
-                if (cHandler != null) cHandler.reciveMessage(msg);
+        ArrayList<ChatConnectionHandler> chatGroup = chats.get(roomId);
+        
+        synchronized (chatGroup) {
+            for (ChatConnectionHandler client : chatGroup) {
+                if (client != null) client.reciveMessage(msg);
             }
+            chatGroup.notifyAll();
         }
     }
 
     public static void endChat (int roomId)
     {
-        synchronized (chats.get(roomId)) {
-            if (chats.get(roomId) != null) {
-                chats.get(roomId).remove(roomId);
+        ArrayList<ChatConnectionHandler> chatGroup = chats.get(roomId);
+        synchronized (chatGroup) {
+            if (chatGroup != null) {
+                chats.remove(roomId);
             }
         }
     }
 
-    public static void join (int roomId, ChatConnectionHandler h)
+    public static void quit (int roomId,ChatConnectionHandler ch )
     {
-        synchronized (chats) {
-            if (chats.get(roomId) != null)
-            {
-                chats.get(roomId).add(h);
-                broadcast(roomId, h.getNickname() + " entrou!");
+        ArrayList<ChatConnectionHandler> chatGroup = chats.get(roomId);
+        synchronized (chatGroup) {
+            chatGroup.remove(ch);
+        }
+    }
+
+    public static void join (int roomId, ChatConnectionHandler connectHandler)
+    {
+        ArrayList<ChatConnectionHandler> chatGroup = chats.get(roomId);
+        
+        if (chatGroup != null)
+        {
+            synchronized (chatGroup) {
+                chatGroup.add(connectHandler);
             }
+
+            broadcast(roomId, connectHandler.getNickname() + " entrou!");
         }
     }
 
     public static void newChat (int id)
     {
         synchronized (chats) {    
-            chats.put(id, new ArrayList<ChatConnectionHandler>());   
+            chats.put(id, new ArrayList<ChatConnectionHandler>());
         }
     }
 }

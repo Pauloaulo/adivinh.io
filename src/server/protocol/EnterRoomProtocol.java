@@ -24,7 +24,7 @@ public class EnterRoomProtocol implements Protocol
         if (room == null) return ROOM_NOT_EXISTS_STRING;
         
         player.enterRoom(room);
-        String response = String.format("%s,%s", SUCESSFULL_STRING, player.getRoom().getInfo());
+        String response = String.format("%s,%s", JOINED_IN_A_ROOM_STRING, player.getRoom().getInfo());
 
         // Retorna os dados da sala ao se conectar
         // "(status),(qtd. jogadores),(host chat),(porta chat),(host drawner),(porta drawner)"

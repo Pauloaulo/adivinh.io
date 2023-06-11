@@ -18,4 +18,5 @@ public interface Protocol
     public final String TEXT_MESSAGE_STRING = "text-message";
     public final String JOIN_CHAT_STRING = "join-chat";
     public final String CHAT_JOINED_SUCESSFULLY = "chat-joined-sucessfully";
+    public final String JOINED_IN_A_ROOM_STRING = "joined-in-a-room"; 
 }

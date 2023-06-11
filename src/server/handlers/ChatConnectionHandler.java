@@ -15,10 +15,7 @@ public class ChatConnectionHandler implements Runnable
     private static DataInputStream in;
     private static DataOutputStream out;
     
-    public ChatConnectionHandler (Chat c, Socket s)
-    {
-        socket = s;
-    }
+    public ChatConnectionHandler (Chat c, Socket s) { socket = s; }
 
     @Override
     public void run()
@@ -28,20 +25,24 @@ public class ChatConnectionHandler implements Runnable
             out = new DataOutputStream(socket.getOutputStream());
 
             String[] request = in.readUTF().split(",");
-            roomId = Integer.parseInt(request[1]);
-            nickcname = request[2];
-
             
-            if (request[0].equals(Protocol.JOIN_CHAT_STRING)) {
+            if (request.length == 3) {
+                roomId = Integer.parseInt(request[1]);
+                nickcname = request[2];
+                
+                if (request[0].equals(Protocol.JOIN_CHAT_STRING)) {
+    
+                    Chat.join(roomId, this);
+                    out.writeUTF(Protocol.CHAT_JOINED_SUCESSFULLY);
 
-                out.writeUTF(Protocol.CHAT_JOINED_SUCESSFULLY);
-                Chat.join(roomId, this);
-
-                while (!socket.isClosed())
-                    Chat.broadcast(roomId, String.format("%s,%s", nickcname, in.readUTF()));
-
-            }
-
+                    // Começa o loop se comunicando
+                    while (!socket.isClosed()) {
+                        Chat.broadcast(roomId, String.format("%s: %s", nickcname, in.readUTF()));
+                    }
+                }
+            } else {
+                out.writeUTF(Protocol.FORBBIDEN_REQUEST_STRING);
+            } 
         } catch (Exception e) {}
     }
 
@@ -56,5 +57,4 @@ public class ChatConnectionHandler implements Runnable
     {
         return nickcname;
     }
-
 }

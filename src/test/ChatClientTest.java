@@ -27,6 +27,7 @@ public class ChatClientTest {
 }
 
 class RequestHandler extends Thread {
+    public static String nick = new String();
     public Socket socket;
     public Semaphore a;
     public Semaphore b;
@@ -44,12 +45,18 @@ class RequestHandler extends Thread {
             Scanner scan = new Scanner(System.in);
             String request = new String();
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            
+
             while (!request.equals(Protocol.LOGOUT_STRING))
             {
                 a.acquire();
                 System.out.print("RESQUEST: ");
                 request = scan.nextLine();
+
+                if (request.startsWith(Protocol.LOGIN_STRING) && request.split(",").length > 1)
+                {
+                    nick = request.split(",")[1];
+                }
+
                 out.writeUTF(request);
                 b.release();
             }
@@ -84,18 +91,61 @@ class ResponseHandler extends Thread {
                 response = in.readUTF();
                 System.out.println("SERVER RESPONSE:");
                 System.out.println(response);
-                if(response.equals(Protocol.CHAT_JOINED_SUCESSFULLY))
-                {
-
+                
+                if(response.split(",")[0].equals(Protocol.JOINED_IN_A_ROOM_STRING)) {
+                    startChating(Integer.parseInt(response.split(",")[1]));
                 }
+
                 b.release();
             }
 
         } catch (Exception e) {}
     }
 
-}
+    public void startChating (int id)
+    {
+        try {
+            Socket s = new Socket("localhost", 3000);
+            DataInputStream in = new DataInputStream(s.getInputStream());
+            DataOutputStream out = new DataOutputStream(s.getOutputStream());
+            
+            Scanner scan = new Scanner(System.in);
+            String msg = new String();
 
-class ChatConnection {
-    
+            // logando no chat
+            out.writeUTF(String.format("%s,%d,%s", Protocol.JOIN_CHAT_STRING, id, RequestHandler.nick));
+            System.out.println(in.readUTF());
+
+            // Thread q ficara printando as mensagens recebidas
+            new MSGPrinter(s).start();
+
+            // Loop de envio de mensagens
+            while (!s.isClosed())
+            {
+                msg = scan.nextLine();
+                out.writeUTF(msg);
+            }
+
+            scan.close();
+        } catch (Exception e) { }
+    }
+
+    class MSGPrinter extends Thread {
+        public Socket s;
+        public MSGPrinter (Socket s) { this.s = s; }
+        public void run ()
+        {
+            try {
+                DataInputStream in = new DataInputStream(s.getInputStream());
+                String msg = new String();
+
+                while (!s.isClosed())
+                {
+                    msg = in.readUTF();
+                    System.out.println(msg);
+                }
+
+            } catch (Exception e ) {}
+        }
+    }
 }
