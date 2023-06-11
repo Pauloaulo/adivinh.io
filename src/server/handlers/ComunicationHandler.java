@@ -18,39 +18,39 @@ public class ComunicationHandler implements Protocol
     {
         try
         {
-            DataInputStream in = new DataInputStream(player.getSocket().getInputStream());
-            DataOutputStream out = new DataOutputStream(player.getSocket().getOutputStream());
+            DataInputStream in = new DataInputStream(player.getServerSocket().getInputStream());
+            DataOutputStream out = new DataOutputStream(player.getServerSocket().getOutputStream());
             String[] request = null;
             String response = null;
     
             System.out.println(String.format("%s has been connected", player.getNickname()));
     
-            while (!player.getSocket().isClosed())
+            while (!player.getServerSocket().isClosed())
             {
                 request = in.readUTF().split(",");
     
                 switch (request[0])
                 {
                     case GET_ROOMS_STRING:
-                        response = GetRoomsProtocol.process(request, server, player);
+                        response = GetRoomsProtocol.process(request, player);
                         out.writeUTF(response);
                         break; 
                     case ENTER_ROOM_STRING:
-                        response = EnterRoomProtocol.process(request, server, player);
+                        response = EnterRoomProtocol.process(request, player);
                         out.writeUTF(response);
                         break;
                     case CREATE_ROOM_STRING:
-                        response = CreateRoomProtocol.process(request, server, player);
+                        response = CreateRoomProtocol.process(request, player);
                         out.writeUTF(response);
                         break;
                     case EXIT_ROOM_STRING:
-                        response = ExitRoomProtocol.process(request, server, player);
+                        response = ExitRoomProtocol.process(request, player);
                         out.writeUTF(response);
                         break;
                     case LOGOUT_STRING:
-                        response = LogoutProtocol.process(request, server, player);
+                        response = LogoutProtocol.process(request, player);
                         out.writeUTF(response);
-                        player.getSocket().close();
+                        player.getServerSocket().close();
                         break;
                     default:
                         out.writeUTF(FORBBIDEN_REQUEST_STRING);     
@@ -60,7 +60,7 @@ public class ComunicationHandler implements Protocol
             
         } catch (IOException e) {
             player.quitRoom();
-            server.removePlayer(player);
+            Server.removePlayer(player);
         }
 
         System.out.println(String.format("%s has been disconnected", player.getNickname()));

@@ -6,7 +6,7 @@ import server.room.Room;
 
 public class EnterRoomProtocol implements Protocol 
 {
-    public static String process (String[] request, Server server, Player player)
+    public static String process (String[] request, Player player)
     {
         if (player.getRoom() != null)
             return ALREADY_IN_A_ROOM_STRING;
@@ -17,13 +17,17 @@ public class EnterRoomProtocol implements Protocol
         
         try { 
             roomId = Integer.parseInt(request[1]);
-        } catch (Exception e) { return FORBBIDEN_REQUEST_STRING;}
+        } catch (Exception e) {
+            return FORBBIDEN_REQUEST_STRING;
+        }
         
-        Room room = server.getRoom(roomId);
+        Room room = Server.getRoom(roomId);
         
-        if (room == null) return ROOM_NOT_EXISTS_STRING;
+        if (room == null)
+            return ROOM_NOT_EXISTS_STRING;
         
-        player.enterRoom(room);
+        room.recivePlayer(player);
+
         String response = String.format("%s,%s", JOINED_IN_A_ROOM_STRING, player.getRoom().getInfo());
 
         // Retorna os dados da sala ao se conectar

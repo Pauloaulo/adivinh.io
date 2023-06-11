@@ -20,21 +20,21 @@ public class Server extends Thread
         server.start();
     }
     
-    private Hashtable<Integer, Room> roomMap;
-    private Hashtable<String, Player> playersMap;
-    private DataBase data;
-    private Executor roomPool;
-    private Executor clientPool;
-    private String roomList;
-    private int amountOfCreatedRooms;
-    private int amountOfConnectedPlayers;
-    private int port;
+    private static Hashtable<Integer, Room> roomMap;
+    private static Hashtable<String, Player> playersMap;
+    private static DataBase data;
+    private static Executor roomPool;
+    private static Executor clientPool;
+    private static String roomListString;
+    private static int amountOfCreatedRooms;
+    private static int amountOfConnectedPlayers;
+    private static int port;
 
     public Server(int port) {
-        this.port = port;
+        Server.port = port;
         amountOfCreatedRooms = 0;
         amountOfConnectedPlayers = 0;
-        roomList = new String();
+        roomListString = new String();
         roomMap = new Hashtable<Integer, Room>();
         playersMap = new Hashtable<String, Player>();
         data = new DataBase();
@@ -59,73 +59,94 @@ public class Server extends Thread
 
     }
     
-    public int getAmountOfConnectedPlayers() {
+    public static int getAmountOfConnectedPlayers() {
         return amountOfConnectedPlayers;
     }
 
-    public int getAmountOfCreatedRooms() 
+    public static int getAmountOfCreatedRooms() 
     {
         return amountOfCreatedRooms;
     }
 
-    public Player getPlayer(String name) 
+    public static Player getPlayer(String name) 
     {
         return playersMap.get(name);
     }
 
-    public Room getRoom (int id)
+    public static Room getRoom (int id)
     {
         return roomMap.get(id);
     }
 
-    public Hashtable<Integer, Room> getRoomMap() 
+    public static Hashtable<Integer, Room> getRoomMap() 
     {
         return roomMap;
     }
-    public HashMap<String, HashSet<String>> getCategoryData(String category) {
+
+    public static HashMap<String, HashSet<String>> getCategoryData(String category) {
         HashMap<String, HashMap<String, HashSet<String>>> newData = data.getData();
         HashMap<String, HashSet<String>> categoryData = newData.get(category);
         return categoryData;
     }
 
-    public synchronized void updateRoomList (String roomList)
+    public static void updateRoomListString (String roomList)
     {
-        this.roomList = roomList;
+        synchronized (roomList) {
+            Server.roomListString = roomList;
+            roomList.notifyAll();
+        }
     }
 
-    public String getRoomList()
+    public static String getRoomListString()
     {
-        return roomList;
+        return roomListString;
     }
 
-    public synchronized void addPlayer(Player player)
+    public static void addPlayer(Player player)
     {
-        playersMap.put(player.getNickname(), player);
-        amountOfConnectedPlayers++;
+        synchronized (playersMap) {
+            playersMap.put(player.getNickname(), player);
+            amountOfConnectedPlayers++;
+            playersMap.notifyAll();
+        }
     }
 
-    public synchronized void addRoom(String name, Player host, String category)
+    public static void addRoom(String name, Player host, String category)
     {
-        Room room = new Room(this, ++amountOfCreatedRooms, name, 10, category);
-        roomMap.put(room.getId(), room);
-        host.enterRoom(room);
-        roomPool.execute(room);
+        synchronized (roomMap) {
+            int roomId = ++amountOfCreatedRooms;
+
+            Room room = new Room(roomId, name, 100, category);
+            
+            roomMap.put(room.getId(), room);
+            room.recivePlayer(host);
+            roomMap.notifyAll();
+            roomPool.execute(room);
+        }
     }
 
-    public synchronized boolean removePlayer (Player player)
+    public static boolean removePlayer (Player player)
     {
         try {
-            player.getSocket().close();
-            playersMap.remove(player.getNickname());
-            amountOfConnectedPlayers--;
+            player.getServerSocket().close();
+
+            synchronized (playersMap) {
+                playersMap.remove(player.getNickname());
+                amountOfConnectedPlayers--;
+                playersMap.notifyAll();
+            }
+
         } catch (IOException e) { return false; }
 
         return true;
     }
 
-    public synchronized void removeRoom(int id) 
+    public static void removeRoom(int id) 
     {
-        roomMap.remove(id);
-        if (roomMap.size() == 0) amountOfCreatedRooms = 0;
+        synchronized (roomMap) {
+            roomMap.remove(id);
+            if (roomMap.size() == 0) amountOfCreatedRooms = 0;
+            roomMap.notifyAll();
+        }
     }
 }

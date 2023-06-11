@@ -8,9 +8,9 @@ import server.room.Room;
 
 public class GetRoomsProtocol implements Protocol
 {
-    public static String process (String[] request, Server server, Player player)
+    public static String process (String[] request, Player player)
     {
-        Hashtable<Integer, Room> roomMap = server.getRoomMap();
+        Hashtable<Integer, Room> roomMap = Server.getRoomMap();
         String response = new String();
 
         for (Map.Entry<Integer, Room> room : roomMap.entrySet())

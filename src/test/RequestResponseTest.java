@@ -16,8 +16,8 @@ public class RequestResponseTest {
             Socket socket = new Socket("localhost", 5000);
             Semaphore s1 = new Semaphore(0, true);
             Semaphore s2 = new Semaphore(1, true);
-            RequestHandlerChat req = new RequestHandlerChat(socket, s1, s2);
-            ResponseHandlerChat res = new ResponseHandlerChat(socket, s2, s1);
+            RequestHandler req = new RequestHandler(socket, s1, s2);
+            ResponseHandler res = new ResponseHandler(socket, s2, s1);
             
             req.start();
             res.start();

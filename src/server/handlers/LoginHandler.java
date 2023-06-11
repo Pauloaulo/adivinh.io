@@ -33,17 +33,17 @@ public class LoginHandler implements Runnable, Protocol {
                 if (request.length != 2 || !request[0].equals(LOGIN_STRING) || request[1].equals(null) || request[1].equals(""))
                     out.writeUTF(FORBBIDEN_REQUEST_STRING);
                 
-                else if (server.getPlayer(request[1]) != null)
+                else if (Server.getPlayer(request[1]) != null)
                     out.writeUTF(ACCOUNT_ALREADY_EXIST_STRING);
 
                 else {
                     Player p = new Player(request[1], socket);
-                    server.addPlayer(p);
+                    Server.addPlayer(p);
                     out.writeUTF(SUCESSFULL_STRING);
 
                     new ComunicationHandler(server, p);
                     
-                    if (p != null) p.getSocket().close();
+                    if (p != null) p.getServerSocket().close();
                     p = null;
                 }
             }

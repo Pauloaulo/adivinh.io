@@ -4,22 +4,20 @@ import java.util.LinkedList;
 
 import server.Chat;
 import server.Server;
-import server.game.Game;
+// import server.game.Game;
 
 public class Room implements Runnable
 {
     private int id;
     private LinkedList<Player> players;
-    private Server server;
     private String name;
     private String category;
-    private Game game;
+    // private Game game;
 
-    public Room (Server server, int id, String name, int capacity, String category)
+    public Room (int id, String name, int capacity, String category)
     {
         this.id = id;
         this.name = name;
-        this.server = server;
         this.players = new LinkedList<Player>();
         this.category = category;
         Chat.newChat(id);
@@ -41,7 +39,9 @@ public class Room implements Runnable
     {
         synchronized (players) {
             players.add(p);
+            p.setRoom(this);
             System.out.println(String.format("%s: %s entrou!",name,p.getNickname()));
+            players.notifyAll();
         }
     }
 
@@ -50,6 +50,7 @@ public class Room implements Runnable
         synchronized (players) {
             players.remove(p);
             System.out.println(String.format("%s: %s saiu T-T", name, p.getNickname()));
+            players.notifyAll();
         }
     }
 
@@ -63,6 +64,6 @@ public class Room implements Runnable
 
         System.out.println("sala " + name + " encerrada");
         Chat.endChat(id);
-        server.removeRoom(this.id);
+        Server.removeRoom(this.id);
     }
 }

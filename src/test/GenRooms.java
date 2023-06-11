@@ -12,7 +12,7 @@ import server.protocol.Protocol;
 public class GenRooms {
     public static void main(String[] args) {
 
-        int amount = 100;
+        int amount = 101;
         
         Executor e = Executors.newFixedThreadPool(amount);
 
@@ -42,12 +42,16 @@ class ClientTest implements Runnable
 
             out.writeUTF(String.format("%s,%s",Protocol.LOGIN_STRING, nickname));
 
-            if(in.readUTF().equals(Protocol.SUCESSFULL_STRING))
+            String response = in.readUTF();
+            if(response.equals(Protocol.SUCESSFULL_STRING))
             {
-                out.writeUTF(String.format("%s,%s", Protocol.CREATE_ROOM_STRING, nickname));
+                out.writeUTF(String.format("%s,%s,%s", Protocol.CREATE_ROOM_STRING, nickname, "animal"));
+                response = in.readUTF();
+                System.out.println(response);
                 wait();
             }
             
+            s.close();
         } catch (Exception e) {
             System.out.println("desconectado!");
         }

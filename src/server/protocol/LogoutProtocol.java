@@ -5,10 +5,10 @@ import server.room.Player;
 
 public class LogoutProtocol implements Protocol {
     
-    public static String process (String[] request, Server server, Player player)
+    public static String process (String[] request, Player player)
     {
         player.quitRoom();
-        server.removePlayer(player);
+        Server.removePlayer(player);
         return SUCESSFULL_STRING;        
     }
 }

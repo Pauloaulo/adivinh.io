@@ -4,7 +4,7 @@ import server.Server;
 import server.room.Player;
 
 public class CreateRoomProtocol implements Protocol {
-    public static String process (String[] request, Server server, Player p)
+    public static String process (String[] request, Player p)
     {
         if (p.getRoom() != null)
             return ALREADY_IN_A_ROOM_STRING;
@@ -13,7 +13,7 @@ public class CreateRoomProtocol implements Protocol {
 
         String roomName = request[1];
         String roomCategory = request[2];
-        server.addRoom(roomName, p, roomCategory);
+        Server.addRoom(roomName, p, roomCategory);
         String response = String.format("%s,%s", SUCESSFULL_STRING, p.getRoom().getInfo());
         return response;
     }
