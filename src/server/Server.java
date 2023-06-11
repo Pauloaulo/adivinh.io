@@ -7,10 +7,11 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import server.game.DataBase;
 import server.handlers.LoginHandler;
 import server.room.Player;
 import server.room.Room;
-import server.DataBase;
 
 public class Server extends Thread 
 {
@@ -81,6 +82,11 @@ public class Server extends Thread
     {
         return roomMap;
     }
+    public HashMap<String, HashSet<String>> getCategoryData(String category) {
+        HashMap<String, HashMap<String, HashSet<String>>> newData = data.getData();
+        HashMap<String, HashSet<String>> categoryData = newData.get(category);
+        return categoryData;
+    }
 
     public synchronized void updateRoomList (String roomList)
     {
@@ -98,9 +104,9 @@ public class Server extends Thread
         amountOfConnectedPlayers++;
     }
 
-    public synchronized void addRoom(String name, Player host) 
+    public synchronized void addRoom(String name, Player host, String category)
     {
-        Room room = new Room(this, ++amountOfCreatedRooms, name, 200);
+        Room room = new Room(this, ++amountOfCreatedRooms, name, 10, category);
         roomMap.put(room.getId(), room);
         host.enterRoom(room);
         roomPool.execute(room);

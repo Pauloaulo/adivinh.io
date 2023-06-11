@@ -1,5 +1,7 @@
 package server.room;
 
+import server.room.Room;
+
 import java.net.Socket;
 
 public class Player

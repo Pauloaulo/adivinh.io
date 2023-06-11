@@ -14,7 +14,6 @@ import java.awt.event.KeyListener;
 public class LoginFrame extends JFrame implements KeyListener, ActionListener, Protocol {
     protected App control;
     protected String nickname;
-
     private JTextField login;
 
     public LoginFrame(String nickname, App control) {
