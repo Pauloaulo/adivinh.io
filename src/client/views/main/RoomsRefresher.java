@@ -27,5 +27,6 @@ public class RoomsRefresher implements Runnable {
     @Override
     public void run() {
         frame.getRooms();
+        frame.updateScrollPane();
     }
 }

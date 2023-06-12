@@ -6,12 +6,14 @@ import client.views.login.LoginFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Random;
 
 public class RoomFrame extends LoginFrame {
     private JMenuBar menuBar;
     private JButton newRoom;
     private JLabel profile;
     private JPanel lower;
+    private JScrollPane scrollBar;
 
     private RoomsRefresher scheduler;
 
@@ -19,7 +21,7 @@ public class RoomFrame extends LoginFrame {
         super(nickname,control);
 
         profile.setText(nickname);
-        profile.setIcon(new ImageIcon("/resources/java.png"));
+        profile.setIcon(new ImageIcon(getIcon()));
 
         menuBar = new JMenuBar();
         menuBar.add(setMenu());
@@ -59,9 +61,17 @@ public class RoomFrame extends LoginFrame {
         lower.setPreferredSize(new Dimension(10,10));
         lower.setLayout(new FlowLayout());
 
+        scrollBar = new JScrollPane(lower, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                           JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         panel.add(upper,BorderLayout.NORTH);
-        panel.add(lower,BorderLayout.CENTER);
+        panel.add(scrollBar,BorderLayout.CENTER);
         return panel;
+    }
+
+    private String getIcon() {
+        Random random = new Random();
+        return "resources/profile"+random.nextInt(5)+".png";
     }
 
     public void getRooms() {
@@ -82,6 +92,18 @@ public class RoomFrame extends LoginFrame {
         //PROBLEM: janela abre toda vez que a lista de sala é atualizada
         this.repaint();
         this.setVisible(true);
+    }
+
+    //?
+    public void updateScrollPane() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                scrollBar.revalidate();
+                scrollBar.repaint();
+            }
+        });
+
     }
 
 

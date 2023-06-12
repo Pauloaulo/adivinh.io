@@ -85,7 +85,7 @@ public class NewRoomFrame extends LoginFrame {
             String name = roomName.getText();
             String theme = roomTheme.getText();
             if (!name.equals("") && !theme.equals("")) {
-                control.setRequest(CREATE_ROOM_STRING+","+name);
+                control.setRequest(CREATE_ROOM_STRING+","+name+","+theme);
 
                 this.dispose();
                 new GameFrame(nickname,control);
