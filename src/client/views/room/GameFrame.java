@@ -9,11 +9,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class GameFrame extends LoginFrame {
-    private Painting paint;
     private JMenuBar menuBar;
+    private JPanel mainPanel;
 
-    public GameFrame(String nickname, App control) {
+    private Chat chat;
+
+    public GameFrame(String id ,String nickname, App control) {
         super(nickname,control);
+
+        int ID = Integer.parseInt(id);
+        chat = new Chat(ID,nickname);
+        mainPanel.add(chat, BorderLayout.CENTER);
 
         menuBar = new JMenuBar();
         menuBar.add(setMenu());
@@ -22,13 +28,9 @@ public class GameFrame extends LoginFrame {
 
     @Override
     public JPanel setMainPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(0x601A80));
-
-        paint = new Painting(500,280);
-
-        panel.add(paint, BorderLayout.NORTH);
-        return panel;
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(new Color(0x601A80));
+        return mainPanel;
     }
 
     @Override
@@ -59,5 +61,7 @@ public class GameFrame extends LoginFrame {
             new RoomFrame(nickname, control);
             dispose();
         }
+        chat.sendMessage("/quit");
+        chat.disconnect();
     }
 }

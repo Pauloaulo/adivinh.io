@@ -1,14 +1,14 @@
 package server.protocol;
 
 import server.Server;
-import server.room.Player;
+import server.room.User;
 import server.room.Room;
 
 public class EnterRoomProtocol implements Protocol 
 {
-    public static String process (String[] request, Player player)
+    public static String process (String[] request, User user)
     {
-        if (player.getRoom() != null)
+        if (user.getRoom() != null)
             return ALREADY_IN_A_ROOM_STRING;
         if (request.length != 2)
             return FORBBIDEN_REQUEST_STRING;
@@ -26,9 +26,9 @@ public class EnterRoomProtocol implements Protocol
         if (room == null)
             return ROOM_NOT_EXISTS_STRING;
         
-        room.recivePlayer(player);
+        room.receiveUser(user);
 
-        String response = String.format("%s,%s", JOINED_IN_A_ROOM_STRING, player.getRoom().getInfo());
+        String response = String.format("%s,%s", JOINED_IN_A_ROOM_STRING, user.getRoom().getInfo());
 
         // Retorna os dados da sala ao se conectar
         // "(status),(qtd. jogadores),(host chat),(porta chat),(host drawner),(porta drawner)"

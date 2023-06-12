@@ -1,19 +1,20 @@
 package server.room;
+import server.handlers.ChatConnectionHandler;
+
 import java.net.Socket;
-public class Player
+public class User
 {
-    private int points;
     private String name;
     private Socket serverSocket;
+    private ChatConnectionHandler ch;
     private Socket chatSocket;
     private Socket paintingSocket;
     private Room room;
     
-    public Player (String nickname, Socket socket)
+    public User(String nickname, Socket socket)
     {
         this.room = null;
         this.name = nickname;
-        this.points = 0;
         this.serverSocket = socket;
     }
 
@@ -54,26 +55,18 @@ public class Player
         }
         return room != null;
     }
+
+    public void setCh (ChatConnectionHandler c) {
+        if (c != null) this.ch = c;
+    }
     
     public boolean quitRoom ()
     {
         Room prevRoom = room;
         if (room != null)
-            room.quitPlayer(this);
+            room.quitUser(this);
         room = null;
         return (prevRoom != room);
-    }
-
-    public boolean incrementPoints(int points)
-    {
-        int prevPoints = points;
-        this.points += points;
-        return prevPoints < points;
-    }
-
-    public int getPoints()
-    {
-        return points;
     }
 
     public String getNickname() 

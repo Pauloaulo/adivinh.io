@@ -2,15 +2,12 @@ package server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import server.game.DataBase;
 import server.handlers.LoginHandler;
-import server.room.Player;
+import server.room.User;
 import server.room.Room;
 
 public class Server extends Thread 
@@ -21,23 +18,21 @@ public class Server extends Thread
     }
     
     private static Hashtable<Integer, Room> roomMap;
-    private static Hashtable<String, Player> playersMap;
-    private static DataBase data;
+    private static Hashtable<String, User> usersMap;
     private static Executor roomPool;
     private static Executor clientPool;
     private static String roomListString;
     private static int amountOfCreatedRooms;
-    private static int amountOfConnectedPlayers;
+    private static int amountOfConnectedUsers;
     private static int port;
 
     public Server(int port) {
         Server.port = port;
         amountOfCreatedRooms = 0;
-        amountOfConnectedPlayers = 0;
+        amountOfConnectedUsers = 0;
         roomListString = new String();
         roomMap = new Hashtable<Integer, Room>();
-        playersMap = new Hashtable<String, Player>();
-        data = new DataBase();
+        usersMap = new Hashtable<String, User>();
         roomPool = Executors.newCachedThreadPool();
         clientPool = Executors.newCachedThreadPool();
         new Chat().start();
@@ -59,8 +54,8 @@ public class Server extends Thread
 
     }
     
-    public static int getAmountOfConnectedPlayers() {
-        return amountOfConnectedPlayers;
+    public static int getAmountOfConnectedUsers() {
+        return amountOfConnectedUsers;
     }
 
     public static int getAmountOfCreatedRooms() 
@@ -68,9 +63,9 @@ public class Server extends Thread
         return amountOfCreatedRooms;
     }
 
-    public static Player getPlayer(String name) 
+    public static User getUser(String name)
     {
-        return playersMap.get(name);
+        return usersMap.get(name);
     }
 
     public static Room getRoom (int id)
@@ -81,12 +76,6 @@ public class Server extends Thread
     public static Hashtable<Integer, Room> getRoomMap() 
     {
         return roomMap;
-    }
-
-    public static HashMap<String, HashSet<String>> getCategoryData(String category) {
-        HashMap<String, HashMap<String, HashSet<String>>> newData = data.getData();
-        HashMap<String, HashSet<String>> categoryData = newData.get(category);
-        return categoryData;
     }
 
     public static void updateRoomListString (String roomList)
@@ -102,16 +91,16 @@ public class Server extends Thread
         return roomListString;
     }
 
-    public static void addPlayer(Player player)
+    public static void addUser(User user)
     {
-        synchronized (playersMap) {
-            playersMap.put(player.getNickname(), player);
-            amountOfConnectedPlayers++;
-            playersMap.notifyAll();
+        synchronized (usersMap) {
+            usersMap.put(user.getNickname(), user);
+            amountOfConnectedUsers++;
+            usersMap.notifyAll();
         }
     }
 
-    public static void addRoom(String name, Player host, String category)
+    public static void addRoom(String name, User host, String category)
     {
         synchronized (roomMap) {
             int roomId = ++amountOfCreatedRooms;
@@ -119,21 +108,21 @@ public class Server extends Thread
             Room room = new Room(roomId, name, 100, category);
             
             roomMap.put(room.getId(), room);
-            room.recivePlayer(host);
+            room.receiveUser(host);
             roomMap.notifyAll();
             roomPool.execute(room);
         }
     }
 
-    public static boolean removePlayer (Player player)
+    public static boolean removeUser (User user)
     {
         try {
-            player.getServerSocket().close();
+            user.getServerSocket().close();
 
-            synchronized (playersMap) {
-                playersMap.remove(player.getNickname());
-                amountOfConnectedPlayers--;
-                playersMap.notifyAll();
+            synchronized (usersMap) {
+                usersMap.remove(user.getNickname());
+                amountOfConnectedUsers--;
+                usersMap.notifyAll();
             }
 
         } catch (IOException e) { return false; }

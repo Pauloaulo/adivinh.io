@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import server.Server;
 import server.protocol.Protocol;
-import server.room.Player;
+import server.room.User;
 
 public class LoginHandler implements Runnable, Protocol {
     private Socket socket;
@@ -33,12 +33,12 @@ public class LoginHandler implements Runnable, Protocol {
                 if (request.length != 2 || !request[0].equals(LOGIN_STRING) || request[1].equals(null) || request[1].equals(""))
                     out.writeUTF(FORBBIDEN_REQUEST_STRING);
                 
-                else if (Server.getPlayer(request[1]) != null)
+                else if (Server.getUser(request[1]) != null)
                     out.writeUTF(ACCOUNT_ALREADY_EXIST_STRING);
 
                 else {
-                    Player p = new Player(request[1], socket);
-                    Server.addPlayer(p);
+                    User p = new User(request[1], socket);
+                    Server.addUser(p);
                     out.writeUTF(SUCESSFULL_STRING);
 
                     new ComunicationHandler(server, p);
