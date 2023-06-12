@@ -51,9 +51,7 @@ public class ChatConnectionHandler implements Runnable
                     }
                 }
             }
-        } catch (Exception e) {
-            boundPlayer.setChatSocket(null);
-        }
+        } catch (Exception e) { }
     }
 
     private void startChating ()
@@ -74,11 +72,11 @@ public class ChatConnectionHandler implements Runnable
                 }
             }
 
-            shutdown();
-
+            
         } catch (Exception e ) {
             try {socket.close();} catch (Exception e2) { }
         }
+        shutdown();
     }
 
     public void shutdown ()
@@ -88,6 +86,7 @@ public class ChatConnectionHandler implements Runnable
             boundPlayer.setChatSocket(null);
             boundPlayer.quitRoom();
             try {socket.close();} catch (IOException e ) {}
+            boundPlayer = null;
         }
     }
 
