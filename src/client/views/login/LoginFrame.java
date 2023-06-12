@@ -29,19 +29,40 @@ public class LoginFrame extends JFrame implements KeyListener, ActionListener, P
 
         this.add(setMainPanel());
         this.setVisible(true);
+        setAlwaysOnTop(true);
     }
 
     protected JPanel setMainPanel() {
         JPanel panel = new JPanel();
-
+        
         login = new JTextField();
         login.addKeyListener(this);
         login.setBounds(150,180,200,50);
-        login.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
+        login.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+        login.setPreferredSize(new Dimension(200, 30));
+        login.setBorder(BorderFactory.createEmptyBorder());
 
+        JLabel lbel = new JLabel();
+        lbel.setText("nickname:");
+        lbel.setForeground(Color.WHITE);
+
+        JButton loginbtn = new JButton();
+        loginbtn.setText("entrar");
+        loginbtn.addActionListener(this);
+        
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.PAGE_AXIS));
+        formPanel.add(lbel);
+        formPanel.add(Box.createVerticalStrut(8));
+        formPanel.add(login);
+        formPanel.add(Box.createVerticalStrut(16));
+        formPanel.add(loginbtn);
+        formPanel.setBackground(new Color(0x601A80));
+
+        //panel.setLayout(new BorderLayout());
+        panel.add(formPanel);
+        panel.setSize(new Dimension(300, 400));
         panel.setBackground(new Color(0x601A80));
-        panel.setLayout(null);
-        panel.add(login);
         return panel;
     }
 
@@ -57,7 +78,7 @@ public class LoginFrame extends JFrame implements KeyListener, ActionListener, P
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //usused
+        login();
     }
 
     @Override
@@ -73,18 +94,23 @@ public class LoginFrame extends JFrame implements KeyListener, ActionListener, P
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == 10) {
-            String nickname = login.getText();
-            if (!nickname.equals("")) {
-                control.setRequest(LOGIN_STRING+","+nickname);
+            login();
+        }
+    }
 
-                String response = control.getResponse();
-                if(response.equals(SUCESSFULL_STRING)) {
-                    new RoomFrame(nickname,control);
-                    this.dispose();
-                }
-                else {
-                    JOptionPane.showMessageDialog(null,ACCOUNT_ALREADY_EXIST_STRING);
-                }
+    public void login()
+    {
+        String nickname = login.getText();
+        if (!nickname.equals("")) {
+            control.setRequest(LOGIN_STRING+","+nickname);
+
+            String response = control.getResponse();
+            if(response.equals(SUCESSFULL_STRING)) {
+                new RoomFrame(nickname,control);
+                this.dispose();
+            }
+            else {
+                JOptionPane.showMessageDialog(null,ACCOUNT_ALREADY_EXIST_STRING);
             }
         }
     }
