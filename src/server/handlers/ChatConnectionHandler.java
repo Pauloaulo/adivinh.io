@@ -67,7 +67,6 @@ public class ChatConnectionHandler implements Runnable
                 msg = in.readUTF();
                 
                 if (msg.startsWith("/quit")) {
-                    shutdown();
                     break;
                 } else {
                     msg = String.format("%s: %s", boundUser.getNickname(), msg);
@@ -76,11 +75,12 @@ public class ChatConnectionHandler implements Runnable
                 }
             }
 
-            
+            // sai da sala e depois chama o shutdown() daqui!
+            boundUser.quitRoom();
+
         } catch (Exception e ) {
             try {socket.close();} catch (Exception e2) { }
         }
-        shutdown();
     }
 
     public void shutdown ()
@@ -88,6 +88,8 @@ public class ChatConnectionHandler implements Runnable
         if (boundUser != null) {
             Chat.quit(boundUser.getRoom().getId(), this);
             try {socket.close();} catch (IOException e ) {}
+            boundUser.setChatHandler(null);
+            boundUser = null;
         }
     }
 

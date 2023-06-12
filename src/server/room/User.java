@@ -18,6 +18,16 @@ public class User
         this.serverSocket = socket;
     }
 
+    public ChatConnectionHandler getChatHandler ()
+    {
+        return ch;
+    }
+
+    public void setChatHandler (ChatConnectionHandler ch)
+    {
+        if (this.ch == null) this.ch = ch;
+    }
+
     public void setChatSocket (Socket s)
     {
         this.chatSocket = s;
@@ -60,13 +70,11 @@ public class User
         if (c != null) this.ch = c;
     }
     
-    public boolean quitRoom ()
+    public void quitRoom ()
     {
-        Room prevRoom = room;
         if (room != null)
             room.quitUser(this);
         room = null;
-        return (prevRoom != room);
     }
 
     public String getNickname() 

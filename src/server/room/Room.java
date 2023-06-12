@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import server.Chat;
 import server.Server;
-// import server.game.Game;
 
 public class Room implements Runnable
 {
@@ -29,6 +28,7 @@ public class Room implements Runnable
         String data = String.format("%d,%d,%s,%s:%d,%s:%d", id, users.size(), category, "localhost", 0, "localhost", 0);
         return data;
     }
+
     public String getCategory() {
         return category;
     }
@@ -47,7 +47,7 @@ public class Room implements Runnable
     {
         synchronized (users) {
             users.remove(p);
-            p.setChatSocket(null);
+            p.getChatHandler().shutdown();
             users.notifyAll();
         }
     }
