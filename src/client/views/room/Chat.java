@@ -4,10 +4,14 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+
+import server.protocol.Protocol;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -15,72 +19,77 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 
 public class Chat extends JPanel implements ActionListener, KeyListener {
     public static void main(String[] args) {
         JFrame wd = new JFrame();
-        wd.setTitle("CHAT TEST");
+        wd.setTitle("WHATSAPP ULTIMATE");
         wd.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        wd.add(new Chat("victinho"));
+        wd.add(new Chat(1, "victinho"));
         wd.pack();
         wd.setResizable(false);
         wd.setAlwaysOnTop(true);
         wd.setVisible(true);
     }
 
-    public JPanel msgpanel;
+    public int roomId;
+    public Socket socket;
+    public DataInputStream in;
+    public DataOutputStream out;
+    public String nickname;
+    public JTextArea messagesArea;
+    public JPanel inputPanel;
     public JTextField input;
-    public JButton sendMsgBtn;
-    public JPanel iptpanel;
+    public JButton sendButton;
+    public JScrollPane msgScroll;
 
-    public Chat (String nickname) {
-        msgpanel = new JPanel();
-        sendMsgBtn = new JButton();
+    public Chat (int roomId, String nickname)
+    {
+        this.roomId = roomId;
+        this.nickname = nickname;
+
+        sendButton = new JButton();
         input = new JTextField();
-        iptpanel = new JPanel();
+        inputPanel = new JPanel();
+        messagesArea = new JTextArea();
+        msgScroll = new JScrollPane(messagesArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        msgpanel.setBackground(Color.ORANGE);
-        msgpanel.setPreferredSize(new Dimension(300, 400));
+        messagesArea.setEditable(false);
+        messagesArea.setForeground(Color.WHITE);
+        messagesArea.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+        messagesArea.setBackground(new Color(5, 20, 15));
+        messagesArea.setLineWrap(true);
 
-        JLabel messageLabel = new JLabel("teste");
-        messageLabel.setForeground(Color.BLACK);
-        messageLabel.setBackground(new Color(255, 200, 0));
-        msgpanel.add(messageLabel);
+        msgScroll.setPreferredSize(new Dimension(280, 400));
+        //msgScroll.add(messagesArea);
 
         input = new JTextField();
         input.addKeyListener(this);
         input.setPreferredSize(new Dimension(200, 32));
-        input.setBackground(new Color(200, 150, 10));
+        input.setBackground(new Color(5, 20, 15));
         input.setBorder(BorderFactory.createEmptyBorder());
         input.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         input.setForeground(Color.WHITE);
 
-        sendMsgBtn.addActionListener(this);
-        sendMsgBtn.setText("enviar");
+        sendButton.addActionListener(this);
+        sendButton.setText("enviar");
 
-        iptpanel.add(input);
-        iptpanel.add(sendMsgBtn);
-        iptpanel.setBackground(new Color(150, 100, 10));
+        inputPanel.add(input);
+        inputPanel.add(sendButton);
+        inputPanel.setBackground(new Color(0, 10, 5));
 
-        add(msgpanel);
-        add(iptpanel);
+        add(msgScroll);
+        add(inputPanel);
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        connect();
     }
 
-    public void appendMsgOnPanel(String msg)
+    public void reciveMsg(String msg)
     {
-        JLabel messageLabel = new JLabel(msg);
-        messageLabel.setForeground(Color.BLACK);
-        messageLabel.setBackground(new Color(250, 150, 0));
-        msgpanel.add(messageLabel);
-        msgpanel.repaint();
-        repaint();
-    }
-
-    public void sendMsg()
-    {
-        appendMsgOnPanel(input.getText());
-        input.setText("");
+        messagesArea.append("\n"+msg);
     }
 
     @Override
@@ -94,11 +103,59 @@ public class Chat extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         if (!input.getText().equals("") && KeyEvent.getKeyText(e.getKeyCode()).equals("Enter"))
-            sendMsg();
+        {
+            sendMessage(input.getText());
+            input.setText("");
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        sendMsg();
-    }   
+        if (!input.getText().equals(""))
+        {
+            sendMessage(input.getText());
+            input.setText("");
+        }
+    }
+
+    public void connect ()
+    {
+        try {
+            socket = new Socket("localhost", 3000);
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
+            
+            // logando no chat
+            out.writeUTF(String.format("%s,%d,%s", Protocol.JOIN_CHAT_STRING, roomId, nickname));
+            System.out.println("logou?: " + in.readUTF());
+
+            new MSGPrinter(socket).start();
+
+        } catch (Exception e) { }
+    }
+    public void sendMessage (String msg)
+    {
+        try {
+            out.writeUTF(msg);
+        } catch (Exception e) { }
+    }
+
+    class MSGPrinter extends Thread {
+        public Socket s;
+        public MSGPrinter (Socket s) { this.s = s; }
+        public void run ()
+        {
+            try {
+                DataInputStream in = new DataInputStream(s.getInputStream());
+                String msg = new String();
+
+                while (!s.isClosed())
+                {
+                    msg = in.readUTF();
+                    reciveMsg(msg);
+                }
+
+            } catch (Exception e ) {}
+        }
+    }
 }
