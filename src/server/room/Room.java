@@ -26,7 +26,7 @@ public class Room implements Runnable
     public String getName () { return name; }
     public String getInfo()
     {
-        String data = String.format("%d,%d,%s:%d,%s:%d", id, users.size(), "localhost", 0, "localhost", 0);
+        String data = String.format("%d,%d,%s,%s:%d,%s:%d", id, users.size(), category, "localhost", 0, "localhost", 0);
         return data;
     }
     public String getCategory() {
@@ -62,6 +62,6 @@ public class Room implements Runnable
 
         System.out.println("sala " + name + " encerrada");
         Chat.endChat(id);
-        Server.removeRoom(this.id);
+        Server.removeRoom(id);
     }
 }

@@ -47,9 +47,9 @@ public class Chat extends Thread
         if (chatGroup != null) {
             synchronized (chatGroup) {
                 for (ChatConnectionHandler client : chatGroup) {
-                    if (client != null) client.receiveMessage(msg);
+                    if (client != null && client.hasBoundPlayer()) 
+                        client.receiveMessage(msg);
                 }
-                chatGroup.notifyAll();
             }
         }
     }
@@ -60,20 +60,20 @@ public class Chat extends Thread
         synchronized (chatGroup) {
             if (chatGroup != null) {
                 for (ChatConnectionHandler hand : chatGroup)
-                    quit(roomId, hand);
+                    if (hand != null && hand.hasBoundPlayer()) hand.shutdown();
                 groups.remove(roomId);
             }
         }
     }
 
-    public static void quit (int roomId, ChatConnectionHandler hand )
+    public static void 
+    quit (int roomId, ChatConnectionHandler hand )
     {
         ArrayList<ChatConnectionHandler> chatGroup = groups.get(roomId);
         synchronized (chatGroup) {
             chatGroup.remove(hand);
             broadcast(roomId, (hand.getBoundPlayer().getNickname() + " saiu"));
             hand = null;
-            chatGroup.notifyAll();
         }
     }
 
@@ -85,7 +85,6 @@ public class Chat extends Thread
         {
             synchronized (chatGroup) {
                 chatGroup.add(hand);
-                chatGroup.notifyAll();
             }
             broadcast(roomId, hand.getBoundPlayer().getNickname() + " entrou!");
         }

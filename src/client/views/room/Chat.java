@@ -3,12 +3,10 @@ package client.views.room;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 
 import server.protocol.Protocol;
 
@@ -22,7 +20,6 @@ import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.security.PublicKey;
 
 public class Chat extends JPanel implements ActionListener, KeyListener {
 
@@ -51,7 +48,7 @@ public class Chat extends JPanel implements ActionListener, KeyListener {
         messagesArea.setEditable(false);
         messagesArea.setForeground(Color.WHITE);
         messagesArea.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
-        messagesArea.setBackground(new Color(5, 20, 15));
+        messagesArea.setBackground(new Color(0x801A80));
         messagesArea.setLineWrap(true);
 
         msgScroll.setPreferredSize(new Dimension(280, 400));
@@ -59,18 +56,18 @@ public class Chat extends JPanel implements ActionListener, KeyListener {
 
         input = new JTextField();
         input.addKeyListener(this);
-        input.setPreferredSize(new Dimension(200, 32));
-        input.setBackground(new Color(5, 20, 15));
+        input.setPreferredSize(new Dimension(300, 32));
+        input.setBackground(Color.WHITE);
         input.setBorder(BorderFactory.createEmptyBorder());
         input.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
-        input.setForeground(Color.WHITE);
+        input.setForeground(Color.BLACK);
 
         sendButton.addActionListener(this);
         sendButton.setText("enviar");
 
         inputPanel.add(input);
         inputPanel.add(sendButton);
-        inputPanel.setBackground(new Color(0, 10, 5));
+        inputPanel.setBackground(new Color(0x601A80));
 
         add(msgScroll);
         add(inputPanel);
@@ -98,12 +95,6 @@ public class Chat extends JPanel implements ActionListener, KeyListener {
             sendMessage(input.getText());
             input.setText("");
         }
-    }
-
-    public void disconnect() {
-        try {
-            socket.close();
-        }catch (Exception e) {}
     }
 
     @Override
@@ -134,6 +125,7 @@ public class Chat extends JPanel implements ActionListener, KeyListener {
     {
         try {
             out.writeUTF(msg);
+            if (msg.startsWith("/quit")) socket.close();
         } catch (Exception e) { }
     }
 

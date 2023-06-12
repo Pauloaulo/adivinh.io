@@ -87,10 +87,7 @@ public class ChatConnectionHandler implements Runnable
     {
         if (boundUser != null) {
             Chat.quit(boundUser.getRoom().getId(), this);
-            boundUser.setChatSocket(null);
-            boundUser.quitRoom();
             try {socket.close();} catch (IOException e ) {}
-            boundUser = null;
         }
     }
 
@@ -100,11 +97,16 @@ public class ChatConnectionHandler implements Runnable
             DataOutputStream out = new DataOutputStream(boundUser.getChatSocket().getOutputStream());
             out.writeUTF(msg);
             out = null;
-        } catch (Exception e ){}
+        } catch (Exception e ) { shutdown(); }
     }
 
     public User getBoundPlayer ()
     {
         return boundUser;
+    }
+
+    public boolean hasBoundPlayer ()
+    {
+        return boundUser != null;
     }
 }

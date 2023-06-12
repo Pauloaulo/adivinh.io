@@ -44,7 +44,7 @@ public class Server extends Thread
         try
         {
             ServerSocket server = new ServerSocket(port);
-
+            System.out.println("Servidor rodando! porta 5000");
             while (!server.isClosed()) 
                 clientPool.execute(new LoginHandler(this, server.accept()));
 
@@ -80,9 +80,9 @@ public class Server extends Thread
 
     public static void updateRoomListString (String roomList)
     {
-        synchronized (roomList) {
+        synchronized (roomListString) {
             Server.roomListString = roomList;
-            roomList.notifyAll();
+            roomListString.notifyAll();
         }
     }
 
@@ -109,8 +109,8 @@ public class Server extends Thread
             
             roomMap.put(room.getId(), room);
             room.receiveUser(host);
-            roomMap.notifyAll();
             roomPool.execute(room);
+            roomMap.notifyAll();
         }
     }
 
