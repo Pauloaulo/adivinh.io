@@ -55,12 +55,16 @@ public class GameFrame extends LoginFrame {
         if (e.getActionCommand().equals(LOGOUT_STRING)) {
             control.setRequest(LOGOUT_STRING);
             chat.sendMessage("/quit");
+            chat.disconnect();
+
             dispose();
         }
         if (e.getActionCommand().equals(EXIT_ROOM_STRING)) {
             control.setRequest(EXIT_ROOM_STRING);
-            new RoomFrame(nickname, control);
             chat.sendMessage("/quit");
+            chat.disconnect();
+
+            new RoomFrame(nickname, control);
             dispose();
         }
     }

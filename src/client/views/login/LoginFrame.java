@@ -29,7 +29,7 @@ public class LoginFrame extends JFrame implements KeyListener, ActionListener, P
 
         this.add(setMainPanel());
         this.setVisible(true);
-        setAlwaysOnTop(true);
+        //setAlwaysOnTop(true);
     }
 
     protected JPanel setMainPanel() {
