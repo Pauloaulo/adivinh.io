@@ -6,6 +6,7 @@ import client.views.login.LoginFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Random;
 
 public class RoomFrame extends LoginFrame {
     private JMenuBar menuBar;
@@ -18,19 +19,11 @@ public class RoomFrame extends LoginFrame {
 
     private RoomsRefresher scheduler;
 
-    public static void main(String[] args) {
-        JFrame window = new JFrame();
-        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        window.add(new RoomFrame("teste", null));
-        window.setAlwaysOnTop(true);
-        window.setVisible(true);
-    }
-
     public RoomFrame(String nickname, App control) {
         super(nickname,control);
 
         profile.setText(nickname);
-        profile.setIcon(new ImageIcon("/resources/java.png"));
+        profile.setIcon(new ImageIcon(iconPath()));
 
         menuBar = new JMenuBar();
         menuBar.add(setMenu());
@@ -38,6 +31,11 @@ public class RoomFrame extends LoginFrame {
 
         scheduler = new RoomsRefresher(this);
         (new Thread(scheduler)).start();
+    }
+
+    private String iconPath() {
+        Random rand = new Random();
+        return "resources/profile"+rand.nextInt(5)+".png";
     }
 
     @Override
@@ -81,10 +79,6 @@ public class RoomFrame extends LoginFrame {
         lower.removeAll();
         control.setRequest(GET_ROOMS_STRING);
         String response = control.getResponse();
-
-        //String response = "";
-        //for (int i = 0; i < 50; i++)
-        //    response = response.concat(String.format("%d,%s,%d,%s\n",i,"sala "+i, i*10,"animal"));
 
         String[] rooms = response.split("\n");
         for (String room : rooms) {
