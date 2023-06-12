@@ -22,18 +22,9 @@ import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.security.PublicKey;
 
 public class Chat extends JPanel implements ActionListener, KeyListener {
-    public static void main(String[] args) {
-        JFrame wd = new JFrame();
-        wd.setTitle("WHATSAPP ULTIMATE");
-        wd.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        wd.add(new Chat(1, "victinho"));
-        wd.pack();
-        wd.setResizable(false);
-        wd.setAlwaysOnTop(true);
-        wd.setVisible(true);
-    }
 
     public int roomId;
     public Socket socket;
@@ -107,6 +98,12 @@ public class Chat extends JPanel implements ActionListener, KeyListener {
             sendMessage(input.getText());
             input.setText("");
         }
+    }
+
+    public void disconnect() {
+        try {
+            socket.close();
+        }catch (Exception e) {}
     }
 
     @Override

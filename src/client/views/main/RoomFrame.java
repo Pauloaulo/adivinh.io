@@ -6,6 +6,7 @@ import client.views.login.LoginFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Random;
 
 public class RoomFrame extends LoginFrame {
     private JMenuBar menuBar;

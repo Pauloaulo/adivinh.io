@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 
 public class RoomLabel extends JLabel implements MouseListener, Protocol {
     private String id;
+    private String theme;
 
     private App control;
     private RoomFrame frame;
@@ -39,11 +40,11 @@ public class RoomLabel extends JLabel implements MouseListener, Protocol {
         if(e.getSource() == this) {
            control.setRequest(ENTER_ROOM_STRING+","+id);
            String response = control.getResponse();
-
-           if (response.contains(SUCESSFULL_STRING)) {
+           System.out.println(response);
+           if (response.contains(JOINED_IN_A_ROOM_STRING)) {
                scheduler.shutdown();
                frame.dispose();
-               new GameFrame(frame.getNickname(),control);
+               new GameFrame(id,frame.getNickname(),control);
            }
         }
     }
