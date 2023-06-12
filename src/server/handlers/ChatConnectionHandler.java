@@ -7,16 +7,18 @@ import java.net.Socket;
 import server.Chat;
 import server.Server;
 import server.protocol.Protocol;
-import server.room.Player;
+import server.room.User;
 
 public class ChatConnectionHandler implements Runnable
 {
-    public Player boundPlayer;
+    public User boundUser;
+    public String message;
     public Socket socket;
     
     public ChatConnectionHandler (Socket s)
     {
         this.socket = s;
+        this.message = "";
     }
 
     @Override
@@ -24,7 +26,7 @@ public class ChatConnectionHandler implements Runnable
     {
         try {
 
-            /** VINCULANDO JOGADOR AO SOCKET **/
+            /** VINCULANDO USUÁRIO AO SOCKET **/
             DataInputStream in = new DataInputStream(socket.getInputStream());
             String[] login = in.readUTF().split(",");
 
@@ -39,11 +41,12 @@ public class ChatConnectionHandler implements Runnable
 
                 if (roomId != null ) {
 
-                    boundPlayer = Server.getPlayer(nickname);
+                    boundUser = Server.getUser(nickname);
                     // System.out.println("bound player nick? " + boundPlayer.getNickname());
                 
-                    if (boundPlayer != null) {
-                        boundPlayer.setChatSocket(socket);
+                    if (boundUser != null) {
+                        boundUser.setChatSocket(socket);
+                        boundUser.setCh(this);
 
                         // System.out.println("bound player socket exist? " + (boundPlayer.getChatSocket() != null));
                         Chat.join(roomId, this);
@@ -58,17 +61,18 @@ public class ChatConnectionHandler implements Runnable
     {
         try {
             String msg = new String();
-            DataInputStream in = new DataInputStream(boundPlayer.getChatSocket().getInputStream());
+            DataInputStream in = new DataInputStream(boundUser.getChatSocket().getInputStream());
 
-            while (boundPlayer.getChatSocket() != null && !boundPlayer.getChatSocket().isClosed()) {
+            while (boundUser.getChatSocket() != null && !boundUser.getChatSocket().isClosed()) {
                 msg = in.readUTF();
                 
                 if (msg.startsWith("/quit")) {
                     shutdown();
                     break;
                 } else {
-                    msg = String.format("%s: %s", boundPlayer.getNickname(), msg);
-                    Chat.broadcast(boundPlayer.getRoom().getId(), msg);
+                    msg = String.format("%s: %s", boundUser.getNickname(), msg);
+                    message = msg;
+                    Chat.broadcast(boundUser.getRoom().getId(), msg);
                 }
             }
 
@@ -81,26 +85,26 @@ public class ChatConnectionHandler implements Runnable
 
     public void shutdown ()
     {
-        if (boundPlayer != null) {
-            Chat.quit(boundPlayer.getRoom().getId(), this);
-            boundPlayer.setChatSocket(null);
-            boundPlayer.quitRoom();
+        if (boundUser != null) {
+            Chat.quit(boundUser.getRoom().getId(), this);
+            boundUser.setChatSocket(null);
+            boundUser.quitRoom();
             try {socket.close();} catch (IOException e ) {}
-            boundPlayer = null;
+            boundUser = null;
         }
     }
 
-    public void reciveMessage (String msg)
+    public void receiveMessage(String msg)
     {
         try {
-            DataOutputStream out = new DataOutputStream(boundPlayer.getChatSocket().getOutputStream());
+            DataOutputStream out = new DataOutputStream(boundUser.getChatSocket().getOutputStream());
             out.writeUTF(msg);
             out = null;
         } catch (Exception e ){}
     }
 
-    public Player getBoundPlayer ()
+    public User getBoundPlayer ()
     {
-        return boundPlayer;
+        return boundUser;
     }
 }

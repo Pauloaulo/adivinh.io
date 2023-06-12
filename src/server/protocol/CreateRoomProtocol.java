@@ -1,10 +1,10 @@
 package server.protocol;
 
 import server.Server;
-import server.room.Player;
+import server.room.User;
 
 public class CreateRoomProtocol implements Protocol {
-    public static String process (String[] request, Player p)
+    public static String process (String[] request, User p)
     {
         if (p.getRoom() != null)
             return ALREADY_IN_A_ROOM_STRING;

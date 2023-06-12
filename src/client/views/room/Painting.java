@@ -23,13 +23,9 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
 
     private boolean eraseMode;
 
-    private boolean block;
-
     public Painting(int w, int h) {
         PAINTING_WIDTH = w;
         PAINTING_HEIGHT = h;
-
-        block = false;
 
         previous = new Coord2D(-1, -1);
         sketch = new Color[PAINTING_WIDTH][PAINTING_HEIGHT];
@@ -40,10 +36,6 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
         setPreferredSize(new Dimension(w, h));
         eraseMode = false;
         clearSketch();
-    }
-
-    public void blockScreen(boolean choice) {
-        block = choice;
     }
 
     public void setEraseMode(boolean erase) {
@@ -79,28 +71,24 @@ public class Painting extends JPanel implements MouseMotionListener, MouseListen
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (block) {
-            return;
+    int x = e.getX();
+    int y = e.getY();
+
+    if (previous.x != -1 && previous.y != -1 && (-1 < x && x < PAINTING_WIDTH && -1 < y && y < PAINTING_HEIGHT)) {
+        Graphics2D ctx = (Graphics2D) getGraphics();
+        ctx.setColor(Color.BLACK);
+        ctx.setStroke(new BasicStroke(BRUSH_SIZE));
+
+        if (eraseMode) {
+            ctx.setColor(Color.WHITE);
         }
 
-        int x = e.getX();
-        int y = e.getY();
-
-        if (previous.x != -1 && previous.y != -1 && (-1 < x && x < PAINTING_WIDTH && -1 < y && y < PAINTING_HEIGHT)) {
-            Graphics2D ctx = (Graphics2D) getGraphics();
-            ctx.setColor(Color.BLACK);
-            ctx.setStroke(new BasicStroke(BRUSH_SIZE));
-
-            if (eraseMode) {
-                ctx.setColor(Color.WHITE);
-            }
-
-            ctx.drawLine(previous.x, previous.y, x, y);
-        }
-
-        previous.x = x;
-        previous.y = y;
+        ctx.drawLine(previous.x, previous.y, x, y);
     }
+
+    previous.x = x;
+    previous.y = y;
+}
 
 
     @Override

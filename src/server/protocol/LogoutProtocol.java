@@ -1,14 +1,14 @@
 package server.protocol;
 
 import server.Server;
-import server.room.Player;
+import server.room.User;
 
 public class LogoutProtocol implements Protocol {
     
-    public static String process (String[] request, Player player)
+    public static String process (String[] request, User user)
     {
-        player.quitRoom();
-        Server.removePlayer(player);
+        user.quitRoom();
+        Server.removeUser(user);
         return SUCESSFULL_STRING;        
     }
 }

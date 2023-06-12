@@ -10,47 +10,47 @@ import server.protocol.ExitRoomProtocol;
 import server.protocol.GetRoomsProtocol;
 import server.protocol.LogoutProtocol;
 import server.protocol.Protocol;
-import server.room.Player;
+import server.room.User;
 
 public class ComunicationHandler implements Protocol 
 {
-    public ComunicationHandler(Server server, Player player)
+    public ComunicationHandler(Server server, User user)
     {
         try
         {
-            DataInputStream in = new DataInputStream(player.getServerSocket().getInputStream());
-            DataOutputStream out = new DataOutputStream(player.getServerSocket().getOutputStream());
+            DataInputStream in = new DataInputStream(user.getServerSocket().getInputStream());
+            DataOutputStream out = new DataOutputStream(user.getServerSocket().getOutputStream());
             String[] request = null;
             String response = null;
     
-            System.out.println(String.format("%s has been connected", player.getNickname()));
+            System.out.println(String.format("%s has been connected", user.getNickname()));
     
-            while (!player.getServerSocket().isClosed())
+            while (!user.getServerSocket().isClosed())
             {
                 request = in.readUTF().split(",");
     
                 switch (request[0])
                 {
                     case GET_ROOMS_STRING:
-                        response = GetRoomsProtocol.process(request, player);
+                        response = GetRoomsProtocol.process(request, user);
                         out.writeUTF(response);
                         break; 
                     case ENTER_ROOM_STRING:
-                        response = EnterRoomProtocol.process(request, player);
+                        response = EnterRoomProtocol.process(request, user);
                         out.writeUTF(response);
                         break;
                     case CREATE_ROOM_STRING:
-                        response = CreateRoomProtocol.process(request, player);
+                        response = CreateRoomProtocol.process(request, user);
                         out.writeUTF(response);
                         break;
                     case EXIT_ROOM_STRING:
-                        response = ExitRoomProtocol.process(request, player);
+                        response = ExitRoomProtocol.process(request, user);
                         out.writeUTF(response);
                         break;
                     case LOGOUT_STRING:
-                        response = LogoutProtocol.process(request, player);
+                        response = LogoutProtocol.process(request, user);
                         out.writeUTF(response);
-                        player.getServerSocket().close();
+                        user.getServerSocket().close();
                         break;
                     default:
                         out.writeUTF(FORBBIDEN_REQUEST_STRING);     
@@ -59,10 +59,10 @@ public class ComunicationHandler implements Protocol
             }
             
         } catch (IOException e) {
-            player.quitRoom();
-            Server.removePlayer(player);
+            user.quitRoom();
+            Server.removeUser(user);
         }
 
-        System.out.println(String.format("%s has been disconnected", player.getNickname()));
+        System.out.println(String.format("%s has been disconnected", user.getNickname()));
     }
 }
