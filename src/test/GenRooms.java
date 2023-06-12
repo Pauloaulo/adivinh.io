@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 
 import server.protocol.Protocol;
 
-
 public class GenRooms {
     public static void main(String[] args) {
 
@@ -48,6 +47,7 @@ class ClientTest implements Runnable
                 out.writeUTF(String.format("%s,%s,%s", Protocol.CREATE_ROOM_STRING, nickname, "animal"));
                 response = in.readUTF();
                 System.out.println(response);
+                startChating(nickname, response.split(",")[1]);
                 wait();
             }
             
@@ -55,5 +55,25 @@ class ClientTest implements Runnable
         } catch (Exception e) {
             System.out.println("desconectado!");
         }
+    }
+
+    public void startChating (String nick, String roomid)
+    {
+        try {
+            Socket s = new Socket("localhost", 3000);
+            DataInputStream in = new DataInputStream(s.getInputStream());
+            DataOutputStream out = new DataOutputStream(s.getOutputStream());
+
+            out.writeUTF(Protocol.JOIN_CHAT_STRING + "," +roomid + "," + nick);
+            String response = in.readUTF();
+            int i = 0;
+            while (!s.isClosed()) {
+                out.writeUTF("SPAM " + ++i);
+                try {Thread.sleep(500);} catch (Exception e) {}
+            }
+
+            System.out.println(response);
+
+        } catch (Exception e) {}
     }
 }
