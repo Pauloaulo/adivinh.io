@@ -47,7 +47,7 @@ public class Chat extends Thread
         if (chatGroup != null) {
             synchronized (chatGroup) {
                 for (ChatConnectionHandler client : chatGroup) {
-                    if (client != null) client.reciveMessage(msg);
+                    if (client != null) client.receiveMessage(msg);
                 }
                 chatGroup.notifyAll();
             }

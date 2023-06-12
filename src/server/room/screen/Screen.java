@@ -2,14 +2,14 @@ package server.room.screen;
 
 import java.util.LinkedList;
 
-import server.room.Player;
+import server.room.User;
 
 public class Screen 
 {
-    public LinkedList<Player> players;
+    public LinkedList<User> users;
     
-    public Screen (LinkedList<Player> players, int port)
+    public Screen (LinkedList<User> users, int port)
     {
-        this.players = players;
+        this.users = users;
     }
 }

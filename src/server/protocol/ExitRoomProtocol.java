@@ -1,15 +1,15 @@
 package server.protocol;
 
-import server.room.Player;
+import server.room.User;
 
 public class ExitRoomProtocol implements Protocol
 {
-    public static String process (String[] request, Player player)
+    public static String process (String[] request, User user)
     {
-        if (player.getRoom() == null)
+        if (user.getRoom() == null)
             return ROOM_NOT_EXISTS_STRING;
 
-        player.quitRoom();
+        user.quitRoom();
         return SUCESSFULL_STRING;
     }
 }
